@@ -11,15 +11,23 @@
 
 {% if request.args.get('query') %}
     <p>You searched for: "{{ request.args.get('query') }}"</p>
-    <p><em>Movie results will appear here soon!</em></p>
-
+    
     {% if movies %}
         <h3>Results:</h3>
         {% for movie in movies %}
-            <p>{{ movie.Title }} ({{ movie.Year }})</p>
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
+                <p><strong>{{ movie.Title }}</strong> ({{ movie.Year }})</p>
+                <p>Type: {{ movie.Type }}</p>
+                <form method="POST" action="/add_movie" style="display: inline;">
+                    <input type="hidden" name="imdb_id" value="{{ movie.imdbID }}">
+                    <input type="hidden" name="title" value="{{ movie.Title }}">
+                    <input type="hidden" name="year" value="{{ movie.Year }}">
+                    <button type="submit">Add to Watchlist</button>
+                </form>
+            </div>
         {% endfor %}
     {% else %}
-        <p><em>No movies found. Try a different search</em><p>
+        <p><em>No movies found. Try a different search!</em></p>
     {% endif %}
 {% endif %}
 {% endblock %}
