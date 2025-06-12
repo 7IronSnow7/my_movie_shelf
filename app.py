@@ -1,10 +1,21 @@
-import os
-from pathlib import Path
+from config import Config
+from flask import Flask
+from models import db
+from models.movie import Movie
 
-basedir = Path(__file__).parent
-class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
     
-    # Database configuration
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f'sqlite:///{basedir / "movieshelf.db"}'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Initialize database
+    db.init_app(app)
+
+    # create database tables
+    with app.app_context():
+        db.create_all()
+        
+    return app
+
+app = create_app()
+if __name__ == '__main__':
+    app.run(debug=True)

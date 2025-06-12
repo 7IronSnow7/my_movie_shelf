@@ -19,4 +19,6 @@ class Movie(db.Model):
     notes = db.Column(db.String(500), nullable=True) 
     date_added = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     
+    def __repr__(self):
+        return f'<Movie {self.title} ({self.year})>'
         
