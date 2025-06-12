@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Search Movies - MyMovieShelf{% endblock %}
+
+{% block content %}
+<h2>Search for Movies</h2>
+<form method="GET" action="/search">
+    <input type="text" name="query" placeholder="Enter movie title..." value="{{ request.args.get('query', '') }}">
+    <button type="submit">Search</button>
+</form>
+
+{% if request.args.get('query') %}
+    <p>You searched for: "{{ request.args.get('query') }}"</p>
+    <p><em>Movie results will appear here soon!</em></p>
+
+    {% if movies %}
+        <h3>Results:</h3>
+        {% for movie in movies %}
+            <p>{{ movie.Title }} ({{ movie.Year }})</p>
+        {% endfor %}
+    {% else %}
+        <p><em>No movies found. Try a different search</em><p>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -2,6 +2,7 @@ from config import Config
 from flask import Flask, render_template
 from models import db
 from models.movie import Movie
+from services.movie_services import MovieService
 
 def create_app():
     app = Flask(__name__)
@@ -18,6 +19,10 @@ def create_app():
     @app.route('/')
     def home():
         return render_template('index.html')
+    
+    @app.route('/search')
+    def search():
+        return MovieService.search()
         
     return app
 
