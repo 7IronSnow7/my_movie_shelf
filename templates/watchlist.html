@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}My Watchlist - MyMovieShelf{% endblock %}
+
+{% block content %}
+<h2>🎬 My Movie Watchlist</h2>
+
+{% if movies %}
+    <p>You have {{ movies|length }} movie(s) in your watchlist</p>
+    
+    {% for movie in movies %}
+        <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
+            <h3>{{ movie.title }} ({{ movie.year }})</h3>
+            
+            <p><strong>Status:</strong> 
+                {% if movie.watched %}
+                    ✅ Watched
+                {% else %}
+                    📋 Not watched yet
+                {% endif %}
+            </p>
+            
+            {% if movie.imdb_id %}
+                <p><strong>IMDb ID:</strong> {{ movie.imdb_id }}</p>
+            {% endif %}
+            
+            <p><strong>Added on:</strong> {{ movie.date_added.strftime('%B %d, %Y') }}</p>
+            
+            {% if not movie.watched %}
+                <form method="POST" action="/mark_watched" style="display: inline;">
+                    <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                    <button type="submit" style="background-color: green; color: white;">Mark as Watched</button>
+                </form>
+            {% endif %}
+            
+            <form method="POST" action="/remove_movie" style="display: inline; margin-left: 10px;">
+                <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                <button type="submit" style="background-color: red; color: white;" onclick="return confirm('Are you sure you want to remove this movie?')">Remove</button>
+            </form>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Your watchlist is empty! <a href="/search">Search for movies</a> to add some.</p>
+{% endif %}
+
+<p><a href="/">← Back to Home</a> | <a href="/search">🔍 Search Movies</a></p>
+{% endblock %}

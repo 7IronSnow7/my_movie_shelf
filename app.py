@@ -20,10 +20,12 @@ def create_app():
     def home():
         return render_template('index.html')
     
+    # Search for a movie
     @app.route('/search')
     def search():
         return MovieService.search()
     
+    # Add movie to the watch list
     @app.route('/add_movie', methods=['POST'])
     def add_movie():
         # Get the form data
@@ -41,6 +43,12 @@ def create_app():
         db.session.add(movie)
         db.session.commit()
         return redirect(url_for('search'))
+    
+    # Checking which movies are on the watchlist
+    @app.route('/watchlist')
+    def watchlist():
+        movies = Movie.query.all()
+        return render_template('watchlist.html', movies=movies)
     
     
     return app
