@@ -1,7 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Welcome to Your Movie Shelf!</h2>
-<p>Your personal movie watchlist app</p>
-<a href="/search">🔍 Search for Movies</a>
+<div class="container">
+    <div class="text-center">
+        <h2 style="color: #dc2626; margin-bottom: 10px;">Welcome to Your Movie Shelf!</h2>
+        <p style="color: #ccc; margin-bottom: 30px;">Your personal movie watchlist app</p>
+        
+        <div class="nav-container">
+            <a href="/search" class="btn">🔍 Search for Movies</a>
+            <a href="/watchlist" class="btn">📋 View Watchlist</a>
+        </div>
+    </div>
+    
+    <!-- Simple stats if you want them -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 40px;">
+        <div class="movie-container text-center">
+            <h3 style="color: #dc2626;">Total Movies</h3>
+            <p style="font-size: 2rem; font-weight: bold;">{{ total_movies or 0 }}</p>
+        </div>
+        <div class="movie-container text-center">
+            <h3 style="color: #22c55e;">Watched</h3>
+            <p style="font-size: 2rem; font-weight: bold;">{{ watched_movies or 0 }}</p>
+        </div>
+        <div class="movie-container text-center">
+            <h3 style="color: #f59e0b;">To Watch</h3>
+            <p style="font-size: 2rem; font-weight: bold;">{{ unwatched_movies or 0 }}</p>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -5,24 +5,155 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MyMovieShelf{% endblock %}</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            color: #dc2626;
+            font-size: 2.5rem;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        /* Star rating system */
         .star-rating {
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
         }
 
         .star {
             font-size: 20px;
-            color: #ddd;
+            color: #666;
             transition: color 0.2s;
-            margin-right: 2px;
+            cursor: pointer;
         }
 
         .star:hover,
         .star.hover {
-            color: gold;
+            color: #dc2626;
         }
 
         .star.filled {
-            color: gold;
+            color: #dc2626;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: #dc2626;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #b91c1c;
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+            border: 1px solid #444;
+        }
+
+        .form-input {
+            background-color: #333;
+            border: 1px solid #555;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+
+        /* Movie containers */
+        .movie-container {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .movie-container:hover {
+            border-color: #dc2626;
+        }
+
+        /* Status indicators */
+        .status-watched {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .status-unwatched {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        /* Simple containers */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .rating-text {
+            color: #dc2626;
+            font-weight: bold;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -31,7 +162,7 @@
     {% block content %}{% endblock %}
     
     <script>
-        // Add star rating functionality
+        // Star rating functionality
         document.addEventListener('DOMContentLoaded', function() {
             const starRatings = document.querySelectorAll('.star-rating');
             
@@ -92,7 +223,6 @@
             .then(data => {
                 if (data.success){
                     console.log('Rating updated successfully');
-
                     // Update visual feedback
                     updateRatingDisplay(movieId, data.new_rating);
                 } else{
@@ -101,10 +231,10 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to update rating. Please try again');
+                showNotification('Failed to update rating. Please try again.', 'error');
             });
         }
-        // NEW FUNCTION: Update the visual display
+
         function updateRatingDisplay(movieId, newRating) {
             // Find the star rating element for this movie
             const starRating = document.querySelector(`[data-movie-id="${movieId}"]`);
@@ -125,25 +255,25 @@
                 // Update status display
                 updateStatusDisplay(movieId)
 
-                // Marked as watched notification
-                showWatchedNotification(movieId, newRating);
+                // Show notification
+                showNotification(`Movie rated ${newRating}/5 stars`, 'success');
             }
         }
+
         function updateStatusDisplay(movieId){
             const starRating = document.querySelector(`[data-movie-id="${movieId}"]`);
-            console.log('Found star rating element:', starRating);
             
             if (starRating) {
-                const movieContainer = starRating.closest('div[style*="border"]');
+                const movieContainer = starRating.closest('.movie-container') || starRating.closest('div[style*="border"]');
                 
                 if (movieContainer) {
                     const statusParagraph = movieContainer.querySelector('p:first-of-type strong');
                     
                     if (statusParagraph && statusParagraph.textContent === 'Status:') {
                         const statusText = statusParagraph.parentElement;
-                        statusText.innerHTML = '<strong>Status:</strong> ✅ Watched';
+                        statusText.innerHTML = '<strong>Status:</strong> <span class="status-watched">✅ Watched</span>';
                         
-                        // Also hide the "Mark as Watched" button since it's now watched
+                        // Hide the "Mark as Watched" button
                         const markWatchedForm = movieContainer.querySelector('form[action="/mark_watched"]');
                         if (markWatchedForm) {
                             markWatchedForm.style.display = 'none';
@@ -152,48 +282,37 @@
                 }
             }
         }
-        function showWatchedNotification(movieId, rating) {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.textContent = `✓ Marked as watched (${rating}/5)`;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            animation: slideIn 0.3s ease-out;
-        `;
-        
-        // Add slide-in animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Add to page
-        document.body.appendChild(notification);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.style.animation = 'slideIn 0.3s ease-out reverse';
+
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            
+            const bgColor = type === 'success' ? '#22c55e' : '#dc2626';
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${bgColor};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-weight: bold;
+                z-index: 1000;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            `;
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
-            }, 300);
-        }, 3000);
-    }
+            }, 3000);
+        }
     </script>
 </body>
 </html>

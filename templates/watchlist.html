@@ -3,59 +3,139 @@
 {% block title %}My Watchlist - MyMovieShelf{% endblock %}
 
 {% block content %}
-<h2>🎬 My Movie Watchlist</h2>
+<div class="container">
+    <h2 style="color: #dc2626; text-align: center; margin-bottom: 30px;">🎬 My Movie Watchlist</h2>
 
-{% if movies %}
-    <p>You have {{ movies|length }} movie(s) in your watchlist</p>
-    
-    {% for movie in movies %}
-        <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
-            <h3>{{ movie.title }} ({{ movie.year }})</h3>
-            
-            <p><strong>Status:</strong> 
-                {% if movie.watched %}
-                    ✅ Watched
-                {% else %}
-                    📋 Not watched yet
-                {% endif %}
+    {% if movies %}
+        <div style="text-align: center; margin-bottom: 30px;">
+            <p style="color: #ccc; font-size: 1.1rem;">
+                You have <strong style="color: #dc2626;">{{ movies|length }}</strong> movie(s) in your watchlist
             </p>
-            <p><strong>Your Rating:</strong> 
-                <span class="star-rating" data-movie-id="{{ movie.id }}" data-current-rating="{{ movie.user_rating }}">
-                    {% for i in range(5) %}
-                        <span class="star" data-rating="{{ i + 1 }}">★</span>
-                    {% endfor %}
-                </span>
-                <span class="rating-text">
-                    {% if movie.user_rating %}
-                        ({{ movie.user_rating }}/5)
-                    {% else %}
-                        (0/5)
-                    {% endif %}
-                </span>
-            </p>
-            
-            {% if movie.imdb_id %}
-                <p><strong>IMDb ID:</strong> {{ movie.imdb_id }}</p>
-            {% endif %}
-            
-            <p><strong>Added on:</strong> {{ movie.date_added.strftime('%B %d, %Y') }}</p>
-            
-            {% if not movie.watched %}
-                <form method="POST" action="/mark_watched" style="display: inline;">
-                    <input type="hidden" name="movie_id" value="{{ movie.id }}">
-                    <button type="submit" style="background-color: green; color: white;">Mark as Watched</button>
-                </form>
-            {% endif %}
-            
-            <form method="POST" action="/remove_movie" style="display: inline; margin-left: 10px;">
-                <input type="hidden" name="movie_id" value="{{ movie.id }}">
-                <button type="submit" style="background-color: red; color: white;" onclick="return confirm('Are you sure you want to remove this movie?')">Remove</button>
-            </form>
         </div>
-    {% endfor %}
-{% else %}
-    <p>Your watchlist is empty! <a href="/search">Search for movies</a> to add some.</p>
-{% endif %}
+        
+        {% for movie in movies %}
+            <div class="movie-container">
+                <!-- Movie Header -->
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: white; margin-bottom: 5px;">{{ movie.title }} ({{ movie.year }})</h3>
+                </div>
+                
+                <!-- Movie Info Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <!-- Status -->
+                    <div>
+                        <p><strong>Status:</strong> 
+                            {% if movie.watched %}
+                                <span class="status-watched">✅ Watched</span>
+                            {% else %}
+                                <span class="status-unwatched">📋 Not watched yet</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <!-- Date Added -->
+                    <div>
+                        <p><strong>Added:</strong> <span style="color: #ccc;">{{ movie.date_added.strftime('%B %d, %Y') }}</span></p>
+                    </div>
+                </div>
+                
+                <!-- Rating Section -->
+                <div style="margin-bottom: 20px;">
+                    <p style="margin-bottom: 8px;"><strong>Your Rating:</strong></p>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="star-rating" data-movie-id="{{ movie.id }}" data-current-rating="{{ movie.user_rating }}">
+                            {% for i in range(5) %}
+                                <span class="star" data-rating="{{ i + 1 }}">☆</span>
+                            {% endfor %}
+                        </span>
+                        <span class="rating-text">
+                            {% if movie.user_rating %}
+                                ({{ movie.user_rating }}/5)
+                            {% else %}
+                                (0/5)
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- IMDb Info (if available) -->
+                {% if movie.imdb_id %}
+                    <div style="margin-bottom: 20px;">
+                        <p><strong>IMDb ID:</strong> <span style="color: #ccc;">{{ movie.imdb_id }}</span></p>
+                    </div>
+                {% endif %}
+                
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    {% if not movie.watched %}
+                        <form method="POST" action="/mark_watched" style="display: inline;">
+                            <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                            <button type="submit" class="btn" style="background-color: #22c55e;">
+                                ✅ Mark as Watched
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                    <form method="POST" action="/remove_movie" style="display: inline;">
+                        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                        <button type="submit" 
+                                class="btn" 
+                                style="background-color: #dc2626;" 
+                                onclick="return confirm('Are you sure you want to remove this movie?')">
+                            🗑️ Remove
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+        
+    {% else %}
+        <div class="movie-container text-center">
+            <p style="color: #ccc; font-size: 1.2rem; margin-bottom: 15px;">
+                Your watchlist is empty!
+            </p>
+            <p style="color: #888; margin-bottom: 25px;">
+                Start building your movie collection by searching for films you want to watch.
+            </p>
+            <a href="/search" class="btn">🔍 Search for Movies</a>
+        </div>
+    {% endif %}
 
-<p><a href="/">← Back to Home</a> | <a href="/search">🔍 Search Movies</a></p>
+    <!-- Navigation -->
+    <div class="nav-container" style="margin-top: 40px;">
+        <a href="/" class="nav-link">← Back to Home</a>
+        <a href="/search" class="nav-link">🔍 Search Movies</a>
+    </div>
+</div>
+
+<style>
+    /* Additional styles for watchlist page */
+    .movie-container h3 {
+        border-bottom: 1px solid #444;
+        padding-bottom: 8px;
+    }
+    
+    .btn {
+        min-width: 140px;
+        text-align: center;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        .movie-container > div[style*="grid"] {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+        }
+        
+        .movie-container > div[style*="flex"] {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+        
+        .btn {
+            width: 100% !important;
+            min-width: auto !important;
+        }
+    }
+</style>
 {% endblock %}

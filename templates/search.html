@@ -3,36 +3,77 @@
 {% block title %}Search Movies - MyMovieShelf{% endblock %}
 
 {% block content %}
-<h2>Search for Movies</h2>
-<form method="GET" action="/search">
-    <input type="text" name="query" placeholder="Enter movie title..." value="{{ request.args.get('query', '') }}">
-    <button type="submit">Search</button>
-</form>
-
-{% if request.args.get('query') %}
-    <p>You searched for: "{{ request.args.get('query') }}"</p>
+<div class="container">
+    <h2 style="color: #dc2626; text-align: center; margin-bottom: 30px;">Search for Movies</h2>
     
-    {% if movies %}
-        <h3>Results:</h3>
-        {% for movie in movies %}
-            <div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
-                <p><strong>{{ movie.Title }}</strong> ({{ movie.Year }})</p>
-                <p>Type: {{ movie.Type }}</p>
-                
-                {% if movie.already_added %}
-                    <p style="color: green; font-weight: bold;">✅ Already in Watchlist</p>
-                {% else %}
-                    <form method="POST" action="/add_movie" style="display: inline;">
-                        <input type="hidden" name="imdb_id" value="{{ movie.imdbID }}">
-                        <input type="hidden" name="title" value="{{ movie.Title }}">
-                        <input type="hidden" name="year" value="{{ movie.Year }}">
-                        <button type="submit">Add to Watchlist</button>
-                    </form>
-                {% endif %}
+    <!-- Search Form -->
+    <div class="form-container" style="max-width: 600px; margin: 0 auto;">
+        <form method="GET" action="/search">
+            <input type="text" 
+                   name="query" 
+                   class="form-input" 
+                   placeholder="Enter movie title..." 
+                   value="{{ request.args.get('query', '') }}"
+                   style="margin-bottom: 15px;">
+            <button type="submit" class="btn" style="width: 100%;">🔍 Search Movies</button>
+        </form>
+    </div>
+
+    {% if request.args.get('query') %}
+        <div style="text-align: center; margin: 30px 0;">
+            <p style="color: #ccc;">You searched for: <strong style="color: #dc2626;">"{{ request.args.get('query') }}"</strong></p>
+        </div>
+        
+        {% if movies %}
+            <h3 style="color: #dc2626; margin-bottom: 20px;">Search Results:</h3>
+            
+            {% for movie in movies %}
+                <div class="movie-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                        <!-- Movie Info -->
+                        <div style="flex: 1; min-width: 250px;">
+                            <h4 style="color: white; margin-bottom: 5px;">{{ movie.Title }}</h4>
+                            <p style="color: #ccc; margin-bottom: 5px;">
+                                <strong>Year:</strong> {{ movie.Year }} | 
+                                <strong>Type:</strong> {{ movie.Type }}
+                            </p>
+                        </div>
+                        
+                        <!-- Action Button -->
+                        <div style="flex-shrink: 0;">
+                            {% if movie.already_added %}
+                                <div style="color: #22c55e; font-weight: bold; padding: 10px 20px; border: 1px solid #22c55e; border-radius: 5px;">
+                                    ✅ Already in Watchlist
+                                </div>
+                            {% else %}
+                                <form method="POST" action="/add_movie" style="display: inline;">
+                                    <input type="hidden" name="imdb_id" value="{{ movie.imdbID }}">
+                                    <input type="hidden" name="title" value="{{ movie.Title }}">
+                                    <input type="hidden" name="year" value="{{ movie.Year }}">
+                                    <button type="submit" class="btn">+ Add to Watchlist</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+        {% else %}
+            <div class="movie-container text-center">
+                <p style="color: #ccc; font-size: 1.1rem;">
+                    <em>No movies found. Try a different search term!</em>
+                </p>
+                <p style="color: #888; margin-top: 10px;">
+                    💡 Try searching for popular movies like "Avengers", "Star Wars", or "Batman"
+                </p>
             </div>
-        {% endfor %}
-    {% else %}
-        <p><em>No movies found. Try a different search!</em></p>
+        {% endif %}
     {% endif %}
-{% endif %}
+
+    <!-- Back to Home -->
+    <div class="nav-container" style="margin-top: 40px;">
+        <a href="/" class="nav-link">← Back to Home</a>
+        <a href="/watchlist" class="nav-link">📋 View Watchlist</a>
+    </div>
+</div>
 {% endblock %}
