@@ -1,5 +1,6 @@
-import requests
+from models.movie import Movie 
 from flask import render_template, request, current_app
+import requests
 
 class MovieService:
     @staticmethod
@@ -27,5 +28,9 @@ class MovieService:
         
         if query:
             movies = MovieService.search_movies_api(query)
+            
+            for movie in movies:
+                existing_movie = Movie.query.filter_by(imdb_id=movie['imdbID']).first()
+                movie['already_added'] = existing_movie is not None
             
         return render_template('search.html', movies=movies, query=query)

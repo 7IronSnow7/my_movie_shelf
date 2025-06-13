@@ -18,12 +18,17 @@
             <div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
                 <p><strong>{{ movie.Title }}</strong> ({{ movie.Year }})</p>
                 <p>Type: {{ movie.Type }}</p>
-                <form method="POST" action="/add_movie" style="display: inline;">
-                    <input type="hidden" name="imdb_id" value="{{ movie.imdbID }}">
-                    <input type="hidden" name="title" value="{{ movie.Title }}">
-                    <input type="hidden" name="year" value="{{ movie.Year }}">
-                    <button type="submit">Add to Watchlist</button>
-                </form>
+                
+                {% if movie.already_added %}
+                    <p style="color: green; font-weight: bold;">✅ Already in Watchlist</p>
+                {% else %}
+                    <form method="POST" action="/add_movie" style="display: inline;">
+                        <input type="hidden" name="imdb_id" value="{{ movie.imdbID }}">
+                        <input type="hidden" name="title" value="{{ movie.Title }}">
+                        <input type="hidden" name="year" value="{{ movie.Year }}">
+                        <button type="submit">Add to Watchlist</button>
+                    </form>
+                {% endif %}
             </div>
         {% endfor %}
     {% else %}
