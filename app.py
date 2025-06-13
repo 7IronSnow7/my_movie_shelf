@@ -50,6 +50,28 @@ def create_app():
         movies = Movie.query.all()
         return render_template('watchlist.html', movies=movies)
     
+    # Mark movies as watched
+    @app.route('/mark_watched', methods=['POST'])
+    def mark_watched():
+        movie_id = request.form.get('movie_id')
+        
+        watched_movie = Movie.query.get(movie_id)
+        watched_movie.watched = True
+        
+        db.session.commit()
+        return redirect(url_for('watchlist'))
+    
+    # Remove a movie
+    @app.route('/remove_movie', methods=['POST'])
+    def remove_movie():
+        movie_id = request.form.get('movie_id')
+        movie = Movie.query.get(movie_id)
+        
+        db.session.delete(movie)
+        db.session.commit()
+        
+        return redirect(url_for('watchlist'))
+    
     
     return app
 
