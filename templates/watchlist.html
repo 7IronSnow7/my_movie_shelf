@@ -19,6 +19,20 @@
                     📋 Not watched yet
                 {% endif %}
             </p>
+            <p><strong>Your Rating:</strong> 
+                <span class="star-rating" data-movie-id="{{ movie.id }}" data-current-rating="{{ movie.user_rating }}">
+                    {% for i in range(5) %}
+                        <span class="star" data-rating="{{ i + 1 }}">★</span>
+                    {% endfor %}
+                </span>
+                <span class="rating-text">
+                    {% if movie.user_rating %}
+                        ({{ movie.user_rating }}/5)
+                    {% else %}
+                        (0/5)
+                    {% endif %}
+                </span>
+            </p>
             
             {% if movie.imdb_id %}
                 <p><strong>IMDb ID:</strong> {{ movie.imdb_id }}</p>

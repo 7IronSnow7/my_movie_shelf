@@ -4,9 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MyMovieShelf{% endblock %}</title>
+    <style>
+        .star-rating {
+            cursor: pointer;
+        }
+
+        .star {
+            font-size: 20px;
+            color: #ddd;
+            transition: color 0.2s;
+            margin-right: 2px;
+        }
+
+        .star:hover,
+        .star.hover {
+            color: gold;
+        }
+
+        .star.filled {
+            color: gold;
+        }
+    </style>
 </head>
 <body>
     <h1>🎬 MyMovieShelf</h1>
     {% block content %}{% endblock %}
+    
+    <script>
+        // Add star rating functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const starRatings = document.querySelectorAll('.star-rating');
+            
+            starRatings.forEach(function(starRating) {
+                const stars = starRating.querySelectorAll('.star');
+                const currentRating = parseInt(starRating.getAttribute('data-current-rating')) || 0;
+                
+                // Show current rating
+                showRating(stars, currentRating);
+                
+                // Add hover effects
+                stars.forEach(function(star, index) {
+                    star.addEventListener('mouseenter', function() {
+                        showRating(stars, index + 1);
+                    });
+                    
+                    star.addEventListener('click', function() {
+                        const rating = index + 1;
+                        const movieId = starRating.getAttribute('data-movie-id');
+                        setRating(movieId, rating);
+                    });
+                });
+                
+                // Reset to current rating when mouse leaves
+                starRating.addEventListener('mouseleave', function() {
+                   const currentRating = parseInt(starRating.getAttribute('data-current-rating')) || 0;
+                    showRating(stars, currentRating);
+                });
+            });
+        });
+        
+        function showRating(stars, rating) {
+            stars.forEach(function(star, index) {
+                if (index < rating) {
+                    star.textContent = '★';
+                    star.classList.add('filled');
+                } else {
+                    star.textContent = '☆';
+                    star.classList.remove('filled');
+                }
+            });
+        }
+        
+        function setRating(movieId, rating) {
+            console.log('Setting rating:', rating, 'for movie:', movieId)
+
+            // Create FormData to send
+            const formData = new FormData()
+            formData.append('movie_id', movieId);
+            formData.append('rating', rating)
+
+            // Send the AJAX request
+            fetch('/rate_movie_ajax',{
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success){
+                    console.log('Rating updated successfully');
+
+                    // Update visual feedback
+                    updateRatingDisplay(movieId, data.new_rating);
+                } else{
+                    console.error('Failed to update rating')
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update rating. Please try again');
+            });
+        }
+        // NEW FUNCTION: Update the visual display
+        function updateRatingDisplay(movieId, newRating) {
+            // Find the star rating element for this movie
+            const starRating = document.querySelector(`[data-movie-id="${movieId}"]`);
+            if (starRating) {
+                // Update the data attribute
+                starRating.setAttribute('data-current-rating', newRating);
+                
+                // Update the stars
+                const stars = starRating.querySelectorAll('.star');
+                showRating(stars, newRating);
+                
+                // Update the rating text (4/5)
+                const ratingText = starRating.parentElement.querySelector('.rating-text');
+                if (ratingText) {
+                    ratingText.textContent = `(${newRating}/5)`;
+                }
+                
+                // Update status display
+                updateStatusDisplay(movieId)
+
+                // Marked as watched notification
+                showWatchedNotification(movieId, newRating);
+            }
+        }
+        function updateStatusDisplay(movieId){
+            const starRating = document.querySelector(`[data-movie-id="${movieId}"]`);
+            console.log('Found star rating element:', starRating);
+            
+            if (starRating) {
+                const movieContainer = starRating.closest('div[style*="border"]');
+                
+                if (movieContainer) {
+                    const statusParagraph = movieContainer.querySelector('p:first-of-type strong');
+                    
+                    if (statusParagraph && statusParagraph.textContent === 'Status:') {
+                        const statusText = statusParagraph.parentElement;
+                        statusText.innerHTML = '<strong>Status:</strong> ✅ Watched';
+                        
+                        // Also hide the "Mark as Watched" button since it's now watched
+                        const markWatchedForm = movieContainer.querySelector('form[action="/mark_watched"]');
+                        if (markWatchedForm) {
+                            markWatchedForm.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        }
+        function showWatchedNotification(movieId, rating) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.textContent = `✓ Marked as watched (${rating}/5)`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        // Add slide-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideIn 0.3s ease-out reverse';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+    </script>
 </body>
 </html>

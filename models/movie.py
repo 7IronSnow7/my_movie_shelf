@@ -15,7 +15,7 @@ class Movie(db.Model):
     poster_url = db.Column(db.String(200), nullable=True)
     plot = db.Column(db.String(1000), nullable=True)
     imdb_id = db.Column(db.String(20), nullable=True)
-    user_rating = db.Column(db.Integer, nullable=True) # Scale 1 to 10
+    user_rating = db.Column(db.Integer, nullable=True) # Scale 1 to 5
     notes = db.Column(db.String(500), nullable=True) 
     date_added = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     
