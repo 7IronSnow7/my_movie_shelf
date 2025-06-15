@@ -21,6 +21,8 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(movie_bp)
     
+    print("OMDB API KEY:", app.config.get('OMDB_API_KEY'))
+    
     return app
 
 app = create_app()
