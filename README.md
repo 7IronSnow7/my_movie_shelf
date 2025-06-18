@@ -7,6 +7,10 @@ A Flask-based web application for managing your personal movie collection, track
 ### **Prerequisites**
 - Python 3.8 or higher
 - pip (Python package manager)
+- 
+### **API Setup**
+To fetch movie data (title, plot, poster, etc.), you’ll need a free API key from [OMDb API](https://www.omdbapi.com/apikey.aspx). Add it to your `config.py` as `OMDB_API_KEY`.  
+*(Don't worry it's free!)*  
 
 ### **Installation**
 1. **Fork and download this repository.**
@@ -66,7 +70,7 @@ ______________________________________________________________________________
 <br>Username: demo
 <br>Password: demo123
 ______________________________________________________________________________
-**You can find the passwords in the models/user.py or .env file. Line 40 and 46**
+**You can find the passwords in the models/user.py (Line 40 and 46) or .env file.**
 ______________________________________________________________________________
 
 ## App Structure & Functionality
