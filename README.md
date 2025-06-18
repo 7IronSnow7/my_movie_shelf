@@ -147,3 +147,6 @@ movieshelf/                  # Project root directory
 MovieShelf is a production-ready Flask application for managing personal movie collections, featuring user authentication, admin controls, and rating systems. 
 Built with SQLAlchemy and Jinja2 templates, it's designed for easy deployment while maintaining scalability. 
 The clean architecture separates concerns with controllers, services, and models for maintainability.
+
+## License  
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.  
